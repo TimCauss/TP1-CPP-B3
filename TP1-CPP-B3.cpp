@@ -10,6 +10,7 @@ const int BOARD_SIZE = 6;
 const int NUM_SHIPS = 4;
 const int NUM_PLAYERS = 2;
 const char shipChar = 'S';
+const char seaChar = '0';
 
 struct Ship {
     int size;
@@ -22,7 +23,7 @@ typedef std::vector<std::vector<char>> Board;
 
 // Fonction pour initialiser la grille
 void initializeBoard(Board& board) {
-    board = Board(BOARD_SIZE, std::vector<char>(BOARD_SIZE, '0'));
+    board = Board(BOARD_SIZE, std::vector<char>(BOARD_SIZE, seaChar));
 }
 
 // Fonction pour afficher la grille
@@ -58,7 +59,7 @@ bool canPlaceShip(const Board& board, int x, int y, int size, int direction) {
 
     for (int i = startX; i < endX; ++i) {
         for (int j = startY; j < endY; ++j) {
-            if (board[i][j] != '0') {
+            if (board[i][j] != seaChar) {
                 return false;
             }
         }
@@ -104,10 +105,33 @@ bool isValidInput(int row, int col) {
 bool areShipsSunk(const Board& board, const std::vector<Ship>& ships) {
     for (const auto& row : board) {
         for (char cell : row) {
-            if (cell == 'S') return false;
+            if (cell == shipChar) return false;
         }
     }
     return true;
+}
+
+bool shootingShip(Board& enemyBoard, int shootX, int shootY) {
+
+    //on verif les coordonnées
+    if (shootX < 0 || shootX >= BOARD_SIZE || shootY < 0 || shootY >= BOARD_SIZE) {
+        std::cout << "Invalid coordinates. Try again.\n";
+        return false;
+    }
+
+    // Vérifier si le tir est sur un ship
+    if (enemyBoard[shootX][shootY] == shipChar) {
+        enemyBoard[shootX][shootY] = 'X'; 
+        return true;
+    }
+    else if (enemyBoard[shootX][shootY] == seaChar) {
+        enemyBoard[shootX][shootY] = '+';  // Marquer le tir manqué
+        return false;
+    }
+    else {
+        std::cout << "You have already shot here. Choose different coordinates.\n";
+        return false;
+    }
 }
 
 int main() {
@@ -129,23 +153,40 @@ int main() {
 
 
     while (gameOn) {
+        int shootX = 0;
+        int shootY = 0;
         //On affiche la grille du joueur d'en face:
         std::cout << playerNames[currentPlayer] << "'s turn. Here's the enemy's board: \n\n";
         int enemyPlayer = (currentPlayer + 1) % 2;
         printBoard(playerBoards[enemyPlayer]);
 
-        //Faire une logique de tir
+        //On demande les coordonées de tir
+        do {
+            std::cout << playerNames[currentPlayer] << ", enter your shot coordinates (x,y):\n";
+            std::cout << "Choose x coordinate (1 to " << BOARD_SIZE << "): ";
+            std::cin >> shootX;
+            std::cout << "Choose y coordinate (1 to " << BOARD_SIZE << "): ";
+            std::cin >> shootY;
 
+            // Ajuster pour l'indexation à base zéro
+            shootX--;
+            shootY--;
+        } while (!isValidInput(shootX, shootY));
 
-        //On check s'il reste des navires: 
-        if (areShipsSunk(playerBoards[enemyPlayer], playerShips[enemyPlayer])) {
-            std::cout << "Congratulations " << playerNames[currentPlayer] << "! You won the game!\n";
-            gameOn = false;
+        //Créer une fonction de tir qui modifie la grille et retourne true ou false:
+        bool hit = shootingShip(playerBoards[enemyPlayer], shootX, shootY);
+        if (hit) {
+            std::cout << "Hit!\n\n";
+            if (areShipsSunk(playerBoards[enemyPlayer], playerShips[enemyPlayer])) {
+                std::cout << "All ships have been sunk! " << playerNames[currentPlayer] << " wins!\n";
+                gameOn = false;
+            }
         }
         else {
-            currentPlayer = enemyPlayer;
+            std::cout << "Miss!\n\n";
         }
 
+        currentPlayer = enemyPlayer;
     }
     
     return 0;
