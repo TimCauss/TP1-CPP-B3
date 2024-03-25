@@ -168,12 +168,11 @@ int main() {
             std::cout << "Choose y coordinate (1 to " << BOARD_SIZE << "): ";
             std::cin >> shootY;
 
-            // Ajuster pour l'indexation à base zéro
             shootX--;
             shootY--;
         } while (!isValidInput(shootX, shootY));
 
-        //Créer une fonction de tir qui modifie la grille et retourne true ou false:
+        //Tir !
         bool hit = shootingShip(playerBoards[enemyPlayer], shootX, shootY);
         if (hit) {
             std::cout << "Hit!\n\n";
