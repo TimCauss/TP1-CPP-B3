@@ -67,8 +67,8 @@ bool canPlaceShip(const Board& board, int x, int y, int size, int direction) {
     endY = std::min(endY + 1, BOARD_SIZE);
 
     // Boucle de vérif pour savoir si les cases de la zone définies sont occupées
-    for (int i = startX; i < endX; ++i) {   // On boucle sur les coord X (i)
-        for (int j = startY; j < endY; ++j) { // Puis sur les coord Y (j)
+    for (int i = startX; i < endX; ++i) {   // lignes (i)
+        for (int j = startY; j < endY; ++j) { // colonnes (j)
             if (board[i][j] != seaChar) {   // Si occupée
                 return false;               // On return false
             }
@@ -96,9 +96,9 @@ void placeShips(Board& board, std::vector<Ship>& ships) { // Prend une Board et 
             int y = std::rand() % BOARD_SIZE; 
 
             if (canPlaceShip(board, x, y, ship.size, direction)) { // Ici on vérifie la position avec la fonction canPlaceShip
-                for (int i = 0; i < ship.size; ++i) {
-                    if (direction == 0) board[x][y + i] = shipChar;
-                    else board[x + i][y] = shipChar;
+                for (int i = 0; i < ship.size; ++i) { //boucle qui parcourt la longueur du ship
+                    if (direction == 0) board[x][y + i] = shipChar; // Place le ship horizontalement si dir = 0
+                    else board[x + i][y] = shipChar; // sinon verticalement
                 }
                 placed = true;
             }
@@ -109,10 +109,11 @@ void placeShips(Board& board, std::vector<Ship>& ships) { // Prend une Board et 
 
 // Fonction pour vérifier si une entrée utilisateur est valide
 bool isValidInput(int row, int col) {
-    return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+    return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE; // retourne false si les coord son hors plateau
 }
 
 // Fonction pour vérifier si tous les navires d'un joueur ont été coulés
+// A refaire avec un calcul des hit par rapport au case total des bateaux pour optimiser le jeu
 bool areShipsSunk(const Board& board, const std::vector<Ship>& ships) {
     for (const auto& row : board) {
         for (char cell : row) {
