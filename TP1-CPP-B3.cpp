@@ -1,6 +1,7 @@
 // TP1-CPP-B3.cpp : This file contains the 'main' function. Program execution begins and ends there.
 #include <iostream>
 #include <vector>
+#include <string>
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
@@ -28,10 +29,10 @@ void initializeBoard(Board& board) {
 void printBoard(const Board& board) {
     int boardSize = board.size();
 
-    // Num des colonnes:
-    std::cout << " ";
+    // num des colonnes:
+    std::cout << "   ";
     for (int col = 0; col < boardSize; ++col) {
-        std::cout << std:setw(2) << col + 1 << " ";
+        std::cout << std::setw(2) << col + 1 << " ";
     }
     std::cout << "\n";
 
@@ -44,23 +45,33 @@ void printBoard(const Board& board) {
     }
 }
 
-void canPlaceShip(const Board& board, int x, int y, int size, int direction) {
-    if (direction == 0) {
-        if (y + size > BOARD_SIZE) return false;
-        for (int i = 0; i < size; ++i) {
-            if (board[x][y + i] == shipChar) return false;
+// Fonction qui vérifie si le navire peut être placé
+bool canPlaceShip(const Board& board, int x, int y, int size, int direction) {
+    //Zone à vérif
+    int startX = std::max(0, x - 1);
+    int startY = std::max(0, y - 1);
+    int endX = (direction == 0) ? x + 1 : x + size;
+    int endY = (direction == 1) ? y + 1 : y + size;
+    endX = std::min(endX + 1, BOARD_SIZE);
+    endY = std::min(endY + 1, BOARD_SIZE);
+
+
+    for (int i = startX; i < endX; ++i) {
+        for (int j = startY; j < endY; ++j) {
+            if (board[i][j] != '0') {
+                return false;
+            }
         }
     }
-    else {
-        if (x + size > BOARD_SIZE) return false;
-        for (int i = 0; i < size; ++i) {
-            if (board[x + i][y] == shipChar) return false;
-        }
+
+    if ((direction == 0 && y + size > BOARD_SIZE) || (direction == 1 && x + size > BOARD_SIZE)) {
+        return false;
     }
+
     return true;
 }
 
-// Fonction pour placer les navires aléatoirement sur la grille
+// Fonction pour placer les navires sur la grille
 void placeShips(Board& board, std::vector<Ship>& ships) {
     std::srand(static_cast<unsigned int>(std::time(0)));
 
@@ -100,14 +111,43 @@ bool areShipsSunk(const Board& board, const std::vector<Ship>& ships) {
 }
 
 int main() {
-    Board board;
-    std::vector<Ship> ships = { {2}, {3}, {3}, {4} }; // Initialisation des navires avec des tailles différentes
+    // Démarrage
+    std::string playerNames[2];
+    Board playerBoards[2];
+    std::vector<Ship> playerShips[2] = { {{2}, {3}, {3}, {4}}, {{2}, {3}, {3}, {4}} }; // rendre aléatoire et en fonction de la constante apres
 
-    initializeBoard(board);
-    placeShips(board, ships);
-    printBoard(board);
+    //On récup le nom des joueurs
+    for (int i = 0; i < 2; ++i) {
+        std::cout << "Enter the name for Player " << i + 1 << ": ";
+        std::getline(std::cin, playerNames[i]);
+        initializeBoard(playerBoards[i]);
+        placeShips(playerBoards[i], playerShips[i]);
+    }
 
-    // La grille affichée devrait maintenant montrer les positions des navires marqués par 'S'
+    int currentPlayer = 0;
+    bool gameOn = true;
+
+
+    while (gameOn) {
+        //On affiche la grille du joueur d'en face:
+        std::cout << playerNames[currentPlayer] << "'s turn. Here's the enemy's board: \n\n";
+        int enemyPlayer = (currentPlayer + 1) % 2;
+        printBoard(playerBoards[enemyPlayer]);
+
+        //Faire une logique de tir
+
+
+        //On check s'il reste des navires: 
+        if (areShipsSunk(playerBoards[enemyPlayer], playerShips[enemyPlayer])) {
+            std::cout << "Congratulations " << playerNames[currentPlayer] << "! You won the game!\n";
+            gameOn = false;
+        }
+        else {
+            currentPlayer = enemyPlayer;
+        }
+
+    }
+    
     return 0;
 
 }
