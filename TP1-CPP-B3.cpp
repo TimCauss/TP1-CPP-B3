@@ -148,7 +148,7 @@ bool shootingShip(Board& enemyBoard, int shootX, int shootY) {
 int main() {
     // Démarrage
     std::string playerNames[2]; // On prépare la variable pour stocker les noms des joueurs
-    Board playerBoards[2]; // On prépare la variable pour stocker les Boards des joueurs
+    Board playerBoards[2]; // On instancie les board dans un tableau
     std::vector<Ship> playerShips[2] = { {{2}, {3}, {3}, {4}}, {{2}, {3}, {3}, {4}} }; // A FINIR ! créer une fonction de création des ships
 
     //On récup le nom des joueurs et on initialise les boards et les ship des joueurs
