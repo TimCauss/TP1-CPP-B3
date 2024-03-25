@@ -148,14 +148,14 @@ bool shootingShip(Board& enemyBoard, int shootX, int shootY) {
 
 int main() {
     // Démarrage
-    std::string playerNames[2]; // On prépare la variable pour stocker les noms des joueurs
+    std::string players[2]; // On prépare la variable pour stocker les noms des joueurs
     Board playerBoards[2]; // On instancie les board dans un tableau
     std::vector<Ship> playerShips[2] = { {{2}, {3}, {3}, {4}}, {{2}, {3}, {3}, {4}} }; // A FINIR ! créer une fonction de création des ships
 
     //On récup le nom des joueurs et on initialise les boards et les ship des joueurs
     for (int i = 0; i < 2; ++i) {
         std::cout << "Enter the name for Player " << i + 1 << ": ";
-        std::getline(std::cin, playerNames[i]);         // Récup le nom du joueur i
+        std::getline(std::cin, players[i]);         // Récup le nom du joueur i
         initializeBoard(playerBoards[i]);               // Initialise le board du joueur i
         placeShips(playerBoards[i], playerShips[i]);    // Place les bateaux du joueur i
     }
@@ -171,12 +171,12 @@ int main() {
         int shootY = 0;                             // On initialise et set les coordonnées Y de tir sur 0
 
         //On affiche le nom du joueur actuel et la grille du joueur d'en face:
-        std::cout << playerNames[currentPlayer] << "'s turn. Here's" << playerNames[enemyPlayer] <<"'s board: \n\n";
+        std::cout << players[currentPlayer] << "'s turn. Here's" << players[enemyPlayer] <<"'s board: \n\n";
         printBoard(playerBoards[enemyPlayer]);      // On print la grille du joueur enemy
 
         //On demande les coordonées de tir dans un do while qu'on va uiliser comme un try:
         do {
-            std::cout << playerNames[currentPlayer] << ", enter your shot coordinates (x,y):\n";
+            std::cout << players[currentPlayer] << ", enter your shot coordinates (x,y):\n";
             std::cout << "Choose x coordinate (1 to " << BOARD_SIZE << "): ";
             std::cin >> shootX;
             std::cout << "Choose y coordinate (1 to " << BOARD_SIZE << "): ";
@@ -191,7 +191,7 @@ int main() {
         if (hit) {          // Si on touche on l'affiche et on vérifie s'il reste des bateaux dans la board de l'ennemi avec la fonction areShipsSunk
             std::cout << "Hit!\n\n";
             if (areShipsSunk(playerBoards[enemyPlayer], playerShips[enemyPlayer])) { // Si la fonction areShipSunk retourne true, on annonce le gagnant et on stop le jeu
-                std::cout << "All ships have been sunk! " << playerNames[currentPlayer] << " wins!\n"; 
+                std::cout << "All ships have been sunk! " << players[currentPlayer] << " wins!\n"; 
                 gameOn = false;
             }
         }
