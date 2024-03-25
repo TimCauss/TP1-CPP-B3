@@ -132,11 +132,11 @@ bool shootingShip(Board& enemyBoard, int shootX, int shootY) {
 
     // Vérifier si le tir est sur un ship
     if (enemyBoard[shootX][shootY] == shipChar) {
-        enemyBoard[shootX][shootY] = 'X'; 
+        enemyBoard[shootX][shootY] = 'X'; // Marque le tir touché (constante ?)
         return true;
     }
     else if (enemyBoard[shootX][shootY] == seaChar) {
-        enemyBoard[shootX][shootY] = '+';  // Marquer le tir manqué
+        enemyBoard[shootX][shootY] = '+';  // Marque le tir manqué
         return false;
     }
     else {
@@ -173,7 +173,7 @@ int main() {
         std::cout << playerNames[currentPlayer] << "'s turn. Here's" << playerNames[enemyPlayer] <<"'s board: \n\n";
         printBoard(playerBoards[enemyPlayer]);      // On print la grille du joueur enemy
 
-        //On demande les coordonées de tir
+        //On demande les coordonées de tir dans un do while qu'on va uiliser comme un try:
         do {
             std::cout << playerNames[currentPlayer] << ", enter your shot coordinates (x,y):\n";
             std::cout << "Choose x coordinate (1 to " << BOARD_SIZE << "): ";
@@ -186,11 +186,11 @@ int main() {
         } while (!isValidInput(shootX, shootY));
 
         //Tir !
-        bool hit = shootingShip(playerBoards[enemyPlayer], shootX, shootY);
-        if (hit) {
+        bool hit = shootingShip(playerBoards[enemyPlayer], shootX, shootY); // fonction pour vérifier les tirs
+        if (hit) {          // Si on touche on l'affiche et on vérifie s'il reste des bateaux dans la board de l'ennemi avec la fonction areShipsSunk
             std::cout << "Hit!\n\n";
-            if (areShipsSunk(playerBoards[enemyPlayer], playerShips[enemyPlayer])) {
-                std::cout << "All ships have been sunk! " << playerNames[currentPlayer] << " wins!\n";
+            if (areShipsSunk(playerBoards[enemyPlayer], playerShips[enemyPlayer])) { // Si la fonction areShipSunk retourne true, on annonce le gagnant et on stop le jeu
+                std::cout << "All ships have been sunk! " << playerNames[currentPlayer] << " wins!\n"; 
                 gameOn = false;
             }
         }
@@ -198,7 +198,7 @@ int main() {
             std::cout << "Miss!\n\n";
         }
 
-        currentPlayer = enemyPlayer;
+        currentPlayer = enemyPlayer; // On change de joueur
     }
     
     return 0;
